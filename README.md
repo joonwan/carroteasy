@@ -12,6 +12,10 @@
    - Item 엔티티 구현
    - post 엔티티 구현
 
+ - 2023 10 27
+   - Item 상세 api 구현
+   - Item list api 구현
+
 ---
 ## 사용 기술
 
