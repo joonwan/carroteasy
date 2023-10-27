@@ -1,5 +1,6 @@
 package com.carrot.easy.domain;
 
+import com.carrot.easy.controller.UploadFile;
 import jakarta.persistence.*;
 import lombok.Getter;
 
@@ -14,30 +15,49 @@ public class Item {
     @GeneratedValue
     private Long id;
 
-    private String iteName;
+    private String itemName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "seller_id")
     private Member seller;
 
-    private int Price;
+    @ManyToOne
+    @JoinColumn(name="buyer_id")
+    private Member member;
 
-    private int interestCount; //관심 수
+    private int price;
+
+    private String content;
+
+    private int interestCount = 0; //관심 수
+
+    @OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
+    private UploadFile image;
 
     @Embedded
     private Address address;
 
     private LocalDateTime createDate;
 
+    private LocalDateTime updateDate;
+
+    public void addInterestCount(){
+        this.interestCount ++;
+    }
+
+
     public Item() {
     }
 
-    public Item(String iteName, Member seller, int price, int interestCount, Address address, LocalDateTime createDate) {
-        this.iteName = iteName;
+    public Item(String itemName, Member seller, int price, String content, int interestCount, Address address, LocalDateTime createDate, UploadFile image) {
+        this.itemName = itemName;
         this.seller = seller;
-        Price = price;
+        this.price = price;
+        this.content = content;
         this.interestCount = interestCount;
         this.address = address;
         this.createDate = createDate;
+        this.image = image;
     }
+
 }

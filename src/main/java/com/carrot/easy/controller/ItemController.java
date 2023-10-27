@@ -1,50 +1,156 @@
 package com.carrot.easy.controller;
 
-import com.carrot.easy.domain.Address;
 import com.carrot.easy.domain.Item;
-import com.carrot.easy.repository.item.ItemQueryRepository;
-import com.carrot.easy.repository.item.ItemRepository;
+import com.carrot.easy.domain.Member;
+import com.carrot.easy.file.FileStore;
+import com.carrot.easy.service.ItemService;
+import com.carrot.easy.service.MemberService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@CrossOrigin(origins = "http://localhost:19006")
 @RestController
-@CrossOrigin(origins = "http://localhost:8081")
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Slf4j
 public class ItemController {
 
-    private final ItemRepository itemRepository;
-    private final ItemQueryRepository itemQueryRepository;
+    private final ItemService itemService;
+    private final MemberService memberService;
+    private final FileStore fileStore;
 
     @GetMapping
-    public List<ItemDTO> items() {
-        List<Item> items = itemRepository.findAll();
-        return items.stream().map(ItemDTO::new).collect(Collectors.toList());
+    public List<ItemsDto> items(){
+        List<Item> items = itemService.findAll();
+        return items.stream().map(
+                (i)->new ItemsDto(i.getId(),null,i.getItemName(),i.getAddress().getGu(),i.getAddress().getDong(),i.getCreateDate(),i.getPrice(),i.getInterestCount(),i.getImage().getStoreFileName()))
+                .collect(Collectors.toList());
     }
+
+    @PostMapping("/new")
+    public String createItem(@ModelAttribute ItemRegisterDto param) throws IOException {
+        log.info("param = {}",param);
+
+        Member member = memberService.findMember(param.getMemberId());
+        UploadFile imageFile = fileStore.storeFile(param.getImage());
+
+        Item item = new Item(param.getItemName(), member, param.getPrice(), param.getContent(), 0,member.getAddress(),LocalDateTime.now() ,imageFile);
+        imageFile.setItem(item);
+        itemService.saveItem(item);
+        return "ok";
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemDto item(@PathVariable Long itemId){
+        Item item = itemService.findItem(itemId);
+        Member seller = item.getSeller();
+
+        return new ItemDto(item.getSeller().getName(),item.getAddress().getGu(),item.getAddress().getDong(), seller.getMannerTemperature(), item.getItemName(),item.getCreateDate(),item.getContent(), item.getImage().getStoreFileName(),item.getPrice());
+    }
+
+    @PutMapping("/{itemId}/like")
+    public String changeLike(@PathVariable Long itemId,@RequestBody LikeRequestDto param){
+        log.info("{},{}",param.getLike(),param.getMemberId());
+        Long memberId = param.getMemberId();
+        Boolean like = param.getLike();
+
+        itemService.addInterestItem(memberId, itemId);
+
+        return "ok";
+    }
+
+    @GetMapping("/image/{storeFileName}")
+    public Resource downloadImage(@PathVariable String storeFileName) throws MalformedURLException {
+        return new UrlResource("file:"+fileStore.getFullPath(storeFileName));
+    }
+
+
+
 
 
     @Data
-    static class ItemDTO {
+    static class ItemsDto{
         private Long itemId;
+        private Long memberId;
         private String itemName;
-        private Address address;
-
+        private String gu;
+        private String dong;
+        private LocalDateTime createTime;
         private int price;
         private int interestCount;
+        private String uri;
 
-        public ItemDTO(Item item) {
-            this.itemId = item.getId();
-            this.itemName = item.getIteName();
-            this.address = item.getAddress();
-            this.price = item.getPrice();
-            this.interestCount = item.getInterestCount();
+
+
+        public ItemsDto(Long itemId, Long memberId, String itemName, String gu, String dong, LocalDateTime createTime, int price, int interestCount, String uri) {
+            this.itemId = itemId;
+            this.memberId = memberId;
+            this.itemName = itemName;
+            this.gu = gu;
+            this.dong = dong;
+            this.createTime = createTime;
+            this.price = price;
+            this.interestCount = interestCount;
+            this.uri = uri;
+
         }
     }
+
+    @Data
+    static class ItemRegisterDto{
+
+        private Long memberId;
+        private String itemName;
+        private int price;
+        private String content;
+        private MultipartFile image;
+
+    }
+
+    @Data
+    static class ItemDto{
+
+        private String sellerName;
+        private Double mannerTemperature;
+        private String gu;
+        private String dong;
+        private String itemName;
+        private LocalDateTime createDate;
+        private String content;
+        private String uri;
+        private int price;
+
+        public ItemDto(String sellerName, String gu, String dong,Double mannerTemperature, String itemName, LocalDateTime createDate, String content,String uri, int price) {
+            this.sellerName = sellerName;
+            this.gu = gu;
+            this.dong = dong;
+            this.mannerTemperature = mannerTemperature;
+            this.itemName = itemName;
+            this.createDate = createDate;
+            this.content = content;
+            this.uri = uri;
+            this.price = price;
+        }
+    }
+
+    @Data
+    static class LikeRequestDto{
+
+        private Boolean like;
+        private Long memberId;
+
+
+    }
+
 }

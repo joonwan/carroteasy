@@ -3,7 +3,6 @@ spring:
     url: jdbc:h2:tcp://localhost/~/easy
     username: sa
     password: sa
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -12,8 +11,19 @@ spring:
         format_sql: true
         show_sql: true
         default_batch_fetch_size: 100
+  servlet:
+    multipart:
+      max-file-size: 30MB
 
 
 logging:
   level:
     org.hibernate.sql: trace
+server:
+  address: 0.0.0.0
+  port: 8080
+
+file:
+  dir: /Users/jeonjun-wan/Documents/easy/src/main/resources/image/
+
+

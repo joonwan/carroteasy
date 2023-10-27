@@ -1,11 +1,9 @@
 package com.carrot.easy.domain;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,12 +14,25 @@ public class Member {
     @GeneratedValue
     private Long id;
 
+    private String memberId;
+
+    private String password;
+
     private String name;
 
     private Double mannerTemperature;
 
     @Embedded
     private Address address;
+
+    @OneToMany(mappedBy = "member")
+    private List<InterestItem> interestItems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "member")
+    private List<InterestPost> interestPosts = new ArrayList<>();
+
+
+
 
     public Member(String name, Double mannerTemperature, Address address) {
         this.name = name;
@@ -31,4 +42,5 @@ public class Member {
 
     public Member() {
     }
+
 }

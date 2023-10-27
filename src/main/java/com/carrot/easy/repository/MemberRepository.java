@@ -3,9 +3,9 @@ package com.carrot.easy.repository;
 import com.carrot.easy.domain.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Repository
 public class MemberRepository {
@@ -20,5 +20,9 @@ public class MemberRepository {
 
     public Member findById(Long memberId){
         return em.find(Member.class, memberId);
+    }
+
+    public List<Member> findAll(){
+        return em.createQuery("select m from Member m", Member.class).getResultList();
     }
 }

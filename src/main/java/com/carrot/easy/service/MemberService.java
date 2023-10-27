@@ -13,12 +13,16 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-    @Transactional(readOnly = false)
-    public Long join(Member member){
-        return memberRepository.save(member);
+
+    public Long saveMember(Member member){
+        memberRepository.save(member);
+        return member.getId();
     }
 
     public Member findMember(Long memberId){
         return memberRepository.findById(memberId);
     }
+
+
+
 }
