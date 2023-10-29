@@ -5,6 +5,7 @@ import com.carrot.easy.domain.Member;
 import com.carrot.easy.file.FileStore;
 import com.carrot.easy.service.ItemService;
 import com.carrot.easy.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,23 +54,25 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto item(@PathVariable Long itemId) {
+    public ItemDto item(@PathVariable Long itemId, @RequestParam Long memberId) {
         Item item = itemService.findItem(itemId);
         Member seller = item.getSeller();
-
-        return new ItemDto(item.getSeller().getName(), item.getAddress().getGu(), item.getAddress().getDong(), seller.getMannerTemperature(), item.getItemName(), item.getCreateDate(), item.getContent(), item.getImage().getStoreFileName(), item.getPrice());
+        boolean isLike = itemService.isLike(itemId, memberId);
+        return new ItemDto(item.getSeller().getName(), item.getAddress().getGu(), item.getAddress().getDong(), seller.getMannerTemperature(), item.getItemName(), item.getCreateDate(), item.getContent(), item.getImage().getStoreFileName(), item.getPrice(),isLike);
     }
 
-    @PutMapping("/{itemId}/like")
-    public String changeLike(@PathVariable Long itemId, @RequestBody LikeRequestDto param) {
-        log.info("{},{}", param.getLike(), param.getMemberId());
-        Long memberId = param.getMemberId();
-        Boolean like = param.getLike();
-
-        itemService.addInterestItem(memberId, itemId);
-
+    @PutMapping("/{itemId}")
+    public String changeLike(@PathVariable Long itemId,@RequestParam Long memberId){
+        log.info("itemId = {}",itemId);
+        log.info("memberId = {}",memberId);
+        itemService.changeInterestItem(itemId, memberId);
+        Member member = memberService.findMember(memberId);
+        member.getInterestItems().stream().forEach(i -> log.info("{}",i.getId()));
         return "ok";
+
     }
+
+
 
     @GetMapping("/image/{storeFileName}")
     public Resource downloadImage(@PathVariable String storeFileName) throws MalformedURLException {
@@ -126,8 +130,9 @@ public class ItemController {
         private String content;
         private String uri;
         private int price;
+        private boolean isLike;
 
-        public ItemDto(String sellerName, String gu, String dong, Double mannerTemperature, String itemName, LocalDateTime createDate, String content, String uri, int price) {
+        public ItemDto(String sellerName, String gu, String dong, Double mannerTemperature, String itemName, LocalDateTime createDate, String content, String uri, int price, boolean isLike) {
             this.sellerName = sellerName;
             this.gu = gu;
             this.dong = dong;
@@ -137,16 +142,9 @@ public class ItemController {
             this.content = content;
             this.uri = uri;
             this.price = price;
+            this.isLike = isLike;
         }
     }
 
-    @Data
-    static class LikeRequestDto {
-
-        private Boolean like;
-        private Long memberId;
-
-
-    }
 
 }

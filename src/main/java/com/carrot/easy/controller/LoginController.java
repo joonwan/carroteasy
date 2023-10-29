@@ -2,11 +2,13 @@ package com.carrot.easy.controller;
 
 import com.carrot.easy.domain.Member;
 import com.carrot.easy.service.MemberService;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/login")
+
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:19006")
@@ -16,6 +18,7 @@ public class LoginController {
 
     @PostMapping
     public LoginResponseDto login(@RequestBody LoginRequestDto requestDto){
+
         String loginId = requestDto.getLoginId();
         String password = requestDto.getPassword();
 
@@ -32,7 +35,11 @@ public class LoginController {
 
     @Data
     static class LoginRequestDto{
+
+        @NotEmpty
         private String loginId;
+
+        @NotEmpty
         private String password;
     }
 

@@ -2,20 +2,31 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {Button, Image, SafeAreaView, ScrollView, Text, View, StyleSheet} from "react-native";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Tab = createBottomTabNavigator();
-
-
+const getMemberId = async ()=>{
+    try{
+        const memberId = await AsyncStorage.getItem("memberId");
+        return memberId;
+    }catch(err){
+        console.log(err);
+    }
+}
 function Item({navigation, route}) {
 
-    const {itemId, memberId} = route.params;
+    const {itemId, id} = route.params;
     const [item, setItem] = useState(null);
     const url = "http://localhost:8080/items/" + itemId;
-    const [like, setLike] = useState(false);
-
     useEffect(() => {
         const getResponse = async () => {
-            const response = await axios.get(url);
+            const memberId = await getMemberId();
+            console.log(memberId);
+            const response = await axios.get(url,{
+                params :{
+                    "memberId" : memberId
+                }
+            });
             setItem(response.data);
         };
         getResponse();
@@ -72,7 +83,20 @@ function Item({navigation, route}) {
             </ScrollView>
             <View style={styles.footer}>
                 <View style={styles.likeButton}>
-                    <Button title="like" onPress={() => console.log("like")}/>
+                    <Button title={item.like.toString()} onPress={
+                        async () => {
+                            console.log("hello woorld");
+                            const memberId = await getMemberId();
+                            const data = {memberId};
+                            const jsonData = JSON.stringify(data);
+                            console.log(jsonData);
+                            axios.put("http://localhost:8080/items/" + itemId,
+                                jsonData,{
+                                params: {"memberId":memberId}
+                                }
+                            ).then(console.log("success"))
+                                .catch(e => console.log(e));
+                        }}/>
 
                 </View>
                 <View style={styles.priceSection}>

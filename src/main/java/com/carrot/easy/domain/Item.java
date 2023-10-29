@@ -45,6 +45,10 @@ public class Item {
         this.interestCount ++;
     }
 
+    public void minusInterestCount(){
+        this.interestCount --;
+    }
+
 
     public Item() {
     }

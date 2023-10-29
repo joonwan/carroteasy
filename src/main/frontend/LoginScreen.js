@@ -12,6 +12,7 @@ const LoginScreen = ({navigation}) => {
     const storeMemberId = async (value) =>{
         try{
             const memberId = JSON.stringify(value);
+            console.log("save " + memberId);
             await AsyncStorage.setItem("memberId",memberId );
         }catch(e){
             console.log(e);
