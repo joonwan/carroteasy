@@ -1,9 +1,18 @@
 import {useCallback, useEffect, useState} from "react";
 import axios from "axios";
 import {FlatList, Image, RefreshControl, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
+const getMemberId = async () =>{
+    try{
+        const memberId = await AsyncStorage.getItem("memberId");
+        return memberId;
+    }catch(e){
+        console.log(e);
+    }
+}
 const Home = ({navigation}) => {
-    const memberId = 1;
+    const memberId = getMemberId();
     const [items, setItems] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
 

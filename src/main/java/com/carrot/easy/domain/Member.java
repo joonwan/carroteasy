@@ -2,19 +2,21 @@ package com.carrot.easy.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
+@ToString
 public class Member {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    private String memberId;
+    private String loginId;
 
     private String password;
 
@@ -32,9 +34,10 @@ public class Member {
     private List<InterestPost> interestPosts = new ArrayList<>();
 
 
+    public Member(String loginId, String password, String name, Double mannerTemperature, Address address) {
 
-
-    public Member(String name, Double mannerTemperature, Address address) {
+        this.loginId = loginId;
+        this.password = password;
         this.name = name;
         this.mannerTemperature = mannerTemperature;
         this.address = address;

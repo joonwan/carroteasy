@@ -13,7 +13,7 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-
+    @Transactional(readOnly = false)
     public Long saveMember(Member member){
         memberRepository.save(member);
         return member.getId();
@@ -21,6 +21,10 @@ public class MemberService {
 
     public Member findMember(Long memberId){
         return memberRepository.findById(memberId);
+    }
+
+    public Member findMemberByLoginId(String loginId){
+        return memberRepository.findByLoginId(loginId);
     }
 
 

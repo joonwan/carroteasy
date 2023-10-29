@@ -1,10 +1,33 @@
 import {useState} from "react";
 import {Button, TextInput, View, Text, StyleSheet} from "react-native";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const LoginScreen = ({navigation}) => {
 
     const [loginId, setLoginId] = useState(null);
     const [password, setPassword] = useState(null);
+    const [result, setResult] = useState(null);
+
+    const storeMemberId = async (value) =>{
+        try{
+            const memberId = JSON.stringify(value);
+            await AsyncStorage.setItem("memberId",memberId );
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+    const readData = async() =>{
+        try{
+            const value = await AsyncStorage.getItem("memberId");
+            if(value !== null){
+                console.log(value);
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
     return (
         <View style={styles.container}>
             <Text
@@ -36,8 +59,27 @@ const LoginScreen = ({navigation}) => {
                     title="로그인"
                     onPress={
                         () => {
-                            console.log("hello login");
-                            navigation.navigate("MyTabs");
+                            const data = {loginId, password};
+                            const json = JSON.stringify(data);
+
+                            axios.post(
+                                "http://localhost:8080/login",
+                                json,
+                                {
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    }
+                                }
+                            ).then(
+                                response => {
+                                    console.log(response.data);
+                                    const memberId = response.data.memberId;
+                                    storeMemberId(memberId);
+                                    if(response.data.memberId != null){
+                                        navigation.navigate("MyTabs")
+                                    }
+                                }
+                            ).catch(err => console.log(err));
                         }
                     }
                 />
@@ -46,7 +88,6 @@ const LoginScreen = ({navigation}) => {
                     title="회원 가입"
                     onPress={
                         () => {
-                            console.log("hello login");
                             navigation.navigate("MemberRegisterScreen");
                         }
                     }

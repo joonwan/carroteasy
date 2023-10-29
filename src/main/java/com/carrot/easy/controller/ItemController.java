@@ -31,37 +31,37 @@ public class ItemController {
     private final FileStore fileStore;
 
     @GetMapping
-    public List<ItemsDto> items(){
+    public List<ItemsDto> items() {
         List<Item> items = itemService.findAll();
         return items.stream().map(
-                (i)->new ItemsDto(i.getId(),null,i.getItemName(),i.getAddress().getGu(),i.getAddress().getDong(),i.getCreateDate(),i.getPrice(),i.getInterestCount(),i.getImage().getStoreFileName()))
+                        (i) -> new ItemsDto(i.getId(), null, i.getItemName(), i.getAddress().getGu(), i.getAddress().getDong(), i.getCreateDate(), i.getPrice(), i.getInterestCount(), i.getImage().getStoreFileName()))
                 .collect(Collectors.toList());
     }
 
     @PostMapping("/new")
     public String createItem(@ModelAttribute ItemRegisterDto param) throws IOException {
-        log.info("param = {}",param);
+        log.info("param = {}", param);
 
         Member member = memberService.findMember(param.getMemberId());
         UploadFile imageFile = fileStore.storeFile(param.getImage());
 
-        Item item = new Item(param.getItemName(), member, param.getPrice(), param.getContent(), 0,member.getAddress(),LocalDateTime.now() ,imageFile);
+        Item item = new Item(param.getItemName(), member, param.getPrice(), param.getContent(), 0, member.getAddress(), LocalDateTime.now(), imageFile);
         imageFile.setItem(item);
         itemService.saveItem(item);
         return "ok";
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto item(@PathVariable Long itemId){
+    public ItemDto item(@PathVariable Long itemId) {
         Item item = itemService.findItem(itemId);
         Member seller = item.getSeller();
 
-        return new ItemDto(item.getSeller().getName(),item.getAddress().getGu(),item.getAddress().getDong(), seller.getMannerTemperature(), item.getItemName(),item.getCreateDate(),item.getContent(), item.getImage().getStoreFileName(),item.getPrice());
+        return new ItemDto(item.getSeller().getName(), item.getAddress().getGu(), item.getAddress().getDong(), seller.getMannerTemperature(), item.getItemName(), item.getCreateDate(), item.getContent(), item.getImage().getStoreFileName(), item.getPrice());
     }
 
     @PutMapping("/{itemId}/like")
-    public String changeLike(@PathVariable Long itemId,@RequestBody LikeRequestDto param){
-        log.info("{},{}",param.getLike(),param.getMemberId());
+    public String changeLike(@PathVariable Long itemId, @RequestBody LikeRequestDto param) {
+        log.info("{},{}", param.getLike(), param.getMemberId());
         Long memberId = param.getMemberId();
         Boolean like = param.getLike();
 
@@ -72,15 +72,12 @@ public class ItemController {
 
     @GetMapping("/image/{storeFileName}")
     public Resource downloadImage(@PathVariable String storeFileName) throws MalformedURLException {
-        return new UrlResource("file:"+fileStore.getFullPath(storeFileName));
+        return new UrlResource("file:" + fileStore.getFullPath(storeFileName));
     }
 
 
-
-
-
     @Data
-    static class ItemsDto{
+    static class ItemsDto {
         private Long itemId;
         private Long memberId;
         private String itemName;
@@ -90,7 +87,6 @@ public class ItemController {
         private int price;
         private int interestCount;
         private String uri;
-
 
 
         public ItemsDto(Long itemId, Long memberId, String itemName, String gu, String dong, LocalDateTime createTime, int price, int interestCount, String uri) {
@@ -108,7 +104,7 @@ public class ItemController {
     }
 
     @Data
-    static class ItemRegisterDto{
+    static class ItemRegisterDto {
 
         private Long memberId;
         private String itemName;
@@ -119,7 +115,7 @@ public class ItemController {
     }
 
     @Data
-    static class ItemDto{
+    static class ItemDto {
 
         private String sellerName;
         private Double mannerTemperature;
@@ -131,7 +127,7 @@ public class ItemController {
         private String uri;
         private int price;
 
-        public ItemDto(String sellerName, String gu, String dong,Double mannerTemperature, String itemName, LocalDateTime createDate, String content,String uri, int price) {
+        public ItemDto(String sellerName, String gu, String dong, Double mannerTemperature, String itemName, LocalDateTime createDate, String content, String uri, int price) {
             this.sellerName = sellerName;
             this.gu = gu;
             this.dong = dong;
@@ -145,7 +141,7 @@ public class ItemController {
     }
 
     @Data
-    static class LikeRequestDto{
+    static class LikeRequestDto {
 
         private Boolean like;
         private Long memberId;
