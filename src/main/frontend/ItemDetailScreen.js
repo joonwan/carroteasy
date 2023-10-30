@@ -41,6 +41,7 @@ function Item({navigation, route}) {
             <ScrollView style={styles.scrollSection}>
 
                 <View>
+                    <Text>{item.uri}</Text>
                     <Image style={styles.img} source={{uri: "http://localhost:8080/items/image/" + item.uri}}/>
                 </View>
 

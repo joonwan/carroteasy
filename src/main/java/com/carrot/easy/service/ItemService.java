@@ -6,7 +6,6 @@ import com.carrot.easy.domain.Member;
 import com.carrot.easy.repository.InterestItemRepository;
 import com.carrot.easy.repository.ItemRepository;
 import com.carrot.easy.repository.MemberRepository;
-import jakarta.persistence.NoResultException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,20 +24,20 @@ public class ItemService {
     private final MemberRepository memberRepository;
 
     @Transactional(readOnly = false)
-    public Long saveItem(Item item){
+    public Long saveItem(Item item) {
         return itemRepository.save(item);
     }
 
-    public Item findItem(Long itemId){
+    public Item findItem(Long itemId) {
         return itemRepository.findById(itemId);
     }
 
-    public List<Item> findAll(){
+    public List<Item> findAll() {
         return itemRepository.findAll();
     }
 
     @Transactional(readOnly = false)
-    public Long addInterestItem(Long memberId, Long itemId){
+    public Long addInterestItem(Long memberId, Long itemId) {
         Member member = memberRepository.findById(memberId);
         Item item = itemRepository.findById(itemId);
         item.addInterestCount();
@@ -55,7 +54,7 @@ public class ItemService {
         Item item = itemRepository.findById(itemId);
 
         for (InterestItem interestItem : interestItems) {
-            if(interestItem.getItem().getId().equals(itemId)){
+            if (interestItem.getItem().getId().equals(itemId)) {
                 return true;
             }
         }
@@ -69,18 +68,17 @@ public class ItemService {
         Member member = memberRepository.findById(memberId);
         Item item = itemRepository.findById(itemId);
 
-        if(like){
+        if (like) {
             InterestItem interestItem = interestItemRepository.findById(member, item);
             member.getInterestItems().remove(interestItem);
             interestItemRepository.remove(interestItem);
             item.minusInterestCount();
-        }else {
-            InterestItem interestItem = new InterestItem(member,item);
+        } else {
+            InterestItem interestItem = new InterestItem(member, item);
             interestItem.addThisToMember(member);
             interestItemRepository.save(interestItem);
             item.addInterestCount();
         }
-
 
 
     }

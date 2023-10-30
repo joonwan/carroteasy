@@ -9,11 +9,14 @@ const LoginScreen = ({navigation}) => {
     const [password, setPassword] = useState(null);
     const [result, setResult] = useState(null);
 
-    const storeMemberId = async (value) =>{
+    const storeMemberInfo = async (id, name) =>{
         try{
-            const memberId = JSON.stringify(value);
+            const memberId = JSON.stringify(id);
+            const memberName = JSON.stringify(name);
             console.log("save " + memberId);
+            console.log("save" + memberName);
             await AsyncStorage.setItem("memberId",memberId );
+            await AsyncStorage.setItem("memberName",memberName);
         }catch(e){
             console.log(e);
         }
@@ -75,7 +78,9 @@ const LoginScreen = ({navigation}) => {
                                 response => {
                                     console.log(response.data);
                                     const memberId = response.data.memberId;
-                                    storeMemberId(memberId);
+                                    const memberName = response.data.memberName;
+                                    storeMemberInfo(memberId,memberName);
+
                                     if(response.data.memberId != null){
                                         navigation.navigate("MyTabs")
                                     }

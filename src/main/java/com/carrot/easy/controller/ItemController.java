@@ -41,7 +41,7 @@ public class ItemController {
     }
 
     @PostMapping("/new")
-    public String createItem(@ModelAttribute ItemRegisterDto param) throws IOException {
+    public String createItem(@ModelAttribute ItemRegisterDtoWithImg param) throws IOException {
         log.info("param = {}", param);
 
         Member member = memberService.findMember(param.getMemberId());
@@ -54,24 +54,21 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto item(@PathVariable Long itemId, @RequestParam Long memberId) {
+    public ItemDto getItem(@PathVariable Long itemId, @RequestParam Long memberId) {
         Item item = itemService.findItem(itemId);
         Member seller = item.getSeller();
         boolean isLike = itemService.isLike(itemId, memberId);
-        return new ItemDto(item.getSeller().getName(), item.getAddress().getGu(), item.getAddress().getDong(), seller.getMannerTemperature(), item.getItemName(), item.getCreateDate(), item.getContent(), item.getImage().getStoreFileName(), item.getPrice(),isLike);
+        return new ItemDto(item.getSeller().getName(), item.getAddress().getGu(), item.getAddress().getDong(), seller.getMannerTemperature(), item.getItemName(), item.getCreateDate(), item.getContent(), item.getImage().getStoreFileName(), item.getPrice(), isLike);
     }
 
     @PutMapping("/{itemId}")
-    public String changeLike(@PathVariable Long itemId,@RequestParam Long memberId){
-        log.info("itemId = {}",itemId);
-        log.info("memberId = {}",memberId);
+    public String changeLike(@PathVariable Long itemId, @RequestParam Long memberId) {
+
         itemService.changeInterestItem(itemId, memberId);
         Member member = memberService.findMember(memberId);
-        member.getInterestItems().stream().forEach(i -> log.info("{}",i.getId()));
         return "ok";
 
     }
-
 
 
     @GetMapping("/image/{storeFileName}")
@@ -108,13 +105,23 @@ public class ItemController {
     }
 
     @Data
-    static class ItemRegisterDto {
+    static class ItemRegisterDtoWithImg {
 
         private Long memberId;
         private String itemName;
         private int price;
         private String content;
         private MultipartFile image;
+
+    }
+
+    @Data
+    static class ItemRegisterDto {
+
+        private Long memberId;
+        private String itemName;
+        private int price;
+        private String content;
 
     }
 
