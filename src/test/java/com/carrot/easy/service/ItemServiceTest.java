@@ -35,8 +35,8 @@ class ItemServiceTest {
     @Test
     public void addInterestItemTest() throws Exception {
         //given
-        Member member = new Member("test1", 36.1, new Address("a", "v", "c"));
-        Member member2 = new Member("test2", 36.1, new Address("a", "v", "c"));
+        Member member = new Member("test1","test1","test1", 36.1, new Address("a", "v", "c"));
+        Member member2 = new Member("test1","test1","test1", 36.1, new Address("a", "v", "c"));
         memberService.saveMember(member);
         memberService.saveMember(member2);
 

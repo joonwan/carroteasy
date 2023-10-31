@@ -64,7 +64,8 @@ const Home = ({navigation}) => {
                           </View>
 
 
-                      </TouchableOpacity>}/>
+                      </TouchableOpacity>}
+        />
 
     );
 };

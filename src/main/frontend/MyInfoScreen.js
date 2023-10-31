@@ -14,7 +14,7 @@ const getMemberName = async () =>{
     }
 }
 
-const MyPage = () =>{
+const MyPage = ({navigation}) =>{
     const [memberName, setMemberName] = useState("");
     useEffect( ()=>{
         const setting = async () =>{
@@ -33,7 +33,9 @@ const MyPage = () =>{
 
                 <View style={styles.myTransactionSection}>
                     <Text style={styles.title}>나의 거래</Text>
-                    <TouchableOpacity style={styles.touchable}>
+                    <TouchableOpacity
+                        onPress={()=>navigation.navigate("관심목록")}
+                        style={styles.touchable}>
                         <Text style={styles.text}>관심목록</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.touchable}>

@@ -8,6 +8,7 @@ import MyPage from "./MyInfoScreen";
 import ItemRegisterPage from "./ItemRegisterScreen";
 import Home from "./HomeScreen";
 import ItemDetailScreen from "./ItemDetailScreen";
+import InterestItemsScreen from "./InterestItemsScreen";
 
 
 const Tab = createBottomTabNavigator();
@@ -21,6 +22,7 @@ const Base = () => {
                 <Stack.Screen name="MyTabs" component={MyTabs} options={{headerShown:false}}/>
                 <Stack.Screen name="MemberRegisterScreen" component={MemberRegisterScreen} options={{headerShown:false}}/>
                 <Stack.Screen name="ItemDetailScreen" component={ItemDetailScreen} />
+                <Stack.Screen name="관심목록" component={InterestItemsScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -1,10 +1,13 @@
 package com.carrot.easy.service;
 
+import com.carrot.easy.domain.InterestItem;
 import com.carrot.easy.domain.Member;
 import com.carrot.easy.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,6 +30,9 @@ public class MemberService {
         return memberRepository.findByLoginId(loginId);
     }
 
+    public List<InterestItem> getInterestItems(Long memberId){
+        return memberRepository.getInterestItems(memberId);
+    }
 
 
 }

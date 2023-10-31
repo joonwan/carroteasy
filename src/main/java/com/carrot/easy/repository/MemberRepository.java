@@ -1,5 +1,6 @@
 package com.carrot.easy.repository;
 
+import com.carrot.easy.domain.InterestItem;
 import com.carrot.easy.domain.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -30,5 +31,13 @@ public class MemberRepository {
         return (Member)em.createQuery("select m from Member m where m.loginId = :loginId")
                 .setParameter("loginId", loginId)
                 .getSingleResult();
+    }
+
+
+    public List<InterestItem> getInterestItems(Long memberId) {
+        Member member = findById(memberId);
+        return em.createQuery("select i from Member m join m.interestItems as i where m = :member", InterestItem.class)
+                .setParameter("member",member)
+                .getResultList();
     }
 }

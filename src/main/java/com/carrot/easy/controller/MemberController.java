@@ -1,13 +1,16 @@
 package com.carrot.easy.controller;
 
 import com.carrot.easy.domain.Address;
+import com.carrot.easy.domain.InterestItem;
 import com.carrot.easy.domain.Member;
 import com.carrot.easy.service.MemberService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,6 +37,33 @@ public class MemberController {
         Member member = new Member(memberDto.getLoginId(), memberDto.getPassword(), memberDto.getName(), 36.5, new Address(memberDto.getCity(), memberDto.getGoo(), memberDto.getDong()));
         log.info("{}", member.toString());
         memberService.saveMember(member);
+    }
+
+    @GetMapping("/{memberId}/interestItems")
+    public List<MemberInterestItemDto> getInterestItems(@PathVariable Long memberId){
+        List<InterestItem> interestItems = memberService.getInterestItems(memberId);
+        List<MemberInterestItemDto> dtos = new ArrayList<>();
+
+        interestItems.stream().forEach(ii ->dtos.add(new MemberInterestItemDto(ii)));
+        return dtos;
+    }
+
+    @Data
+    static class MemberInterestItemDto{
+
+        private Long itemId;
+        private String itemName;
+        private int price;
+        private int interestCount;
+        private String uri;
+
+        public MemberInterestItemDto(InterestItem interestItem) {
+            this.itemId = interestItem.getItem().getId();
+            this.itemName = interestItem.getItem().getItemName();
+            this.price = interestItem.getItem().getPrice();
+            this.interestCount = interestItem.getItem().getInterestCount();
+            this.uri = interestItem.getItem().getImage().getStoreFileName();
+        }
     }
 
     @Data
